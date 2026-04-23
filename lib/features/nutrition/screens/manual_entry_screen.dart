@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/nutrition_provider.dart';
+import 'package:nutrition_tracker/features/nutrition/providers/nutrition_provider.dart';
 
 class ManualEntryScreen extends StatefulWidget {
   const ManualEntryScreen({super.key});

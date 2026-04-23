@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'manual_entry_screen.dart';
-import 'ai_scanner_screen.dart';
+import 'package:nutrition_tracker/features/nutrition/screens/manual_entry_screen.dart';
+import 'package:nutrition_tracker/features/nutrition/screens/ai_scanner_screen.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddFoodDialog extends StatelessWidget {

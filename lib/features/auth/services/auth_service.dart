@@ -1,7 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:nutrition_tracker/features/nutrition/services/nutrition_service.dart';
+import 'package:nutrition_tracker/features/profile/models/user_profile.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final NutritionService _nutritionService = NutritionService();
 
   // Stream of auth state changes
   Stream<User?> get authStateChanges => _auth.authStateChanges();
@@ -16,9 +19,21 @@ class AuthService {
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       
-      // Update display name
-      await userCredential.user?.updateDisplayName(name);
-      await userCredential.user?.reload(); // Ensure current user object is updated
+      final user = userCredential.user;
+      if (user != null) {
+        // 1. Update Firebase Auth displayName
+        await user.updateDisplayName(name);
+        await user.reload();
+
+        // 2. Save User Profile to Firestore
+        final profile = UserProfile(
+          uid: user.uid,
+          name: name,
+          email: email,
+          createdAt: DateTime.now(),
+        );
+        await _nutritionService.saveUserProfile(profile);
+      }
       
       return userCredential;
     } on FirebaseAuthException catch (e) {
@@ -46,8 +61,16 @@ class AuthService {
   Future<void> updateDisplayName(String name) async {
     final user = _auth.currentUser;
     if (user == null) throw 'No authenticated user found.';
+    
+    // 1. Update Firebase Auth
     await user.updateDisplayName(name);
     await user.reload();
+
+    // 2. Update Firestore
+    final profile = await _nutritionService.getUserProfile(user.uid);
+    if (profile != null) {
+      await _nutritionService.saveUserProfile(profile.copyWith(name: name));
+    }
   }
 
   // Handle exceptions

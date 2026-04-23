@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
-import 'providers/nutrition_provider.dart';
-import 'providers/auth_provider.dart';
-import 'view/auth/auth_wrapper.dart';
+import 'features/nutrition/providers/nutrition_provider.dart';
+import 'features/auth/providers/auth_provider.dart';
+import 'features/auth/screens/auth_wrapper.dart';
+import 'core/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,23 +39,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Nutrition Tracker',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF62D2A2), // Fresh Mint Green
-          brightness: Brightness.light,
-        ),
-        textTheme: GoogleFonts.poppinsTextTheme(
-          Theme.of(context).textTheme,
-        ),
-        cardTheme: CardThemeData(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
-          ),
-          color: Colors.grey[50],
-        ),
-      ),
+      theme: AppTheme.lightTheme,
       home: const AuthWrapper(),
     );
   }

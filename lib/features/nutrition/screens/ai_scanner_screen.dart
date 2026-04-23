@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/nutrition_provider.dart';
-import '../models/food_entry.dart';
+import 'package:nutrition_tracker/features/nutrition/providers/nutrition_provider.dart';
+import 'package:nutrition_tracker/features/nutrition/models/food_entry.dart';
 
 class AiScannerScreen extends StatefulWidget {
   final String imagePath;

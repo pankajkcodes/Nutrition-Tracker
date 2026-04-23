@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'dashboard_screen.dart';
-import 'profile_screen.dart';
-import 'add_food_dialog.dart';
+import 'package:nutrition_tracker/features/nutrition/screens/dashboard_screen.dart';
+import 'package:nutrition_tracker/features/profile/screens/profile_screen.dart';
+import 'package:nutrition_tracker/features/nutrition/widgets/add_food_dialog.dart';
+import 'package:nutrition_tracker/core/theme/app_colors.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -44,7 +45,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddOptions(context),
-        backgroundColor: const Color(0xFF6366F1), // Indigo color like the FAB in design
+        backgroundColor: AppColors.indigo, // Indigo color like the FAB in design
         shape: const CircleBorder(),
         child: const Icon(Icons.add, color: Colors.white, size: 32),
       ),
@@ -60,13 +61,13 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         children: [
           Icon(
             icon,
-            color: isSelected ? const Color(0xFF6366F1) : Colors.grey,
+            color: isSelected ? AppColors.indigo : Colors.grey,
             size: 28,
           ),
           Text(
             label,
             style: TextStyle(
-              color: isSelected ? const Color(0xFF6366F1) : Colors.grey,
+              color: isSelected ? AppColors.indigo : Colors.grey,
               fontSize: 12,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
