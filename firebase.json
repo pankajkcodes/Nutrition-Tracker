@@ -1,0 +1,31 @@
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "nutrition-trackerapp",
+                    "appId": "1:742555950517:android:4e5ddd809cbe43df390dfc",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "ios": {
+                "default": {
+                    "projectId": "nutrition-trackerapp",
+                    "appId": "1:742555950517:ios:7ef81c93bbb71221390dfc",
+                    "uploadDebugSymbols": false,
+                    "fileOutput": "ios/Runner/GoogleService-Info.plist"
+                }
+            },
+            "dart": {
+                "lib/firebase_options.dart": {
+                    "projectId": "nutrition-trackerapp",
+                    "configurations": {
+                        "android": "1:742555950517:android:4e5ddd809cbe43df390dfc",
+                        "ios": "1:742555950517:ios:7ef81c93bbb71221390dfc",
+                        "web": "1:742555950517:web:ed82320bb4ecc97b390dfc"
+                    }
+                }
+            }
+        }
+    }
+}

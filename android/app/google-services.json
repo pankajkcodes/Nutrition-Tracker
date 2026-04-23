@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "742555950517",
+    "project_id": "nutrition-trackerapp",
+    "storage_bucket": "nutrition-trackerapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:742555950517:android:4e5ddd809cbe43df390dfc",
+        "android_client_info": {
+          "package_name": "com.m.nutrition.tracker.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3bqxITFJb3MlTYgciXNQEujGpfOAYNGY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
