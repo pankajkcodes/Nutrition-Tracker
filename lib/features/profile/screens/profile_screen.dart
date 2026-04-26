@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nutrition_tracker/features/auth/providers/auth_provider.dart';
 import 'package:nutrition_tracker/features/nutrition/providers/nutrition_provider.dart';
+import 'package:intl/intl.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -141,6 +142,8 @@ class ProfileScreen extends StatelessWidget {
                     title: 'Settings',
                     onTap: () {},
                   ),
+                  const SizedBox(height: 24),
+                  _buildDangerZone(context, nutritionProvider),
                   const SizedBox(height: 12),
                   const Divider(height: 32),
                   const SizedBox(height: 12),
@@ -289,4 +292,120 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildDangerZone(BuildContext context, NutritionProvider provider) {
+    final theme = Theme.of(context);
+    final selectedDateStr = DateFormat('MMM dd, yyyy').format(provider.selectedDate);
+    final todayStr = DateFormat('MMM dd, yyyy').format(DateTime.now());
+    final isSelectedDateToday = provider.selectedDate.year == DateTime.now().year &&
+        provider.selectedDate.month == DateTime.now().month &&
+        provider.selectedDate.day == DateTime.now().day;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 16, bottom: 12),
+          child: Text(
+            'DANGER ZONE',
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: Colors.red[700],
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+            ),
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.red.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.red.withValues(alpha: 0.1)),
+          ),
+          child: Column(
+            children: [
+              _buildOptionTile(
+                icon: Icons.history_rounded,
+                color: Colors.red[400]!,
+                title: 'Reset Selected Date ($selectedDateStr)',
+                onTap: () => _showResetConfirmationDialog(context, provider, provider.selectedDate, selectedDateStr),
+                isDestructive: true,
+              ),
+              if (!isSelectedDateToday)
+                _buildOptionTile(
+                  icon: Icons.today_rounded,
+                  color: Colors.red[400]!,
+                  title: 'Reset Today ($todayStr)',
+                  onTap: () => _showResetConfirmationDialog(context, provider, DateTime.now(), todayStr),
+                  isDestructive: true,
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showResetConfirmationDialog(
+    BuildContext context, 
+    NutritionProvider provider, 
+    DateTime date,
+    String dateStr,
+  ) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Reset Daily Data?'),
+        content: Text(
+          'This will permanently delete all food logs and water intake for $dateStr. This action cannot be undone.'
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(dialogContext); // Close confirmation dialog
+              
+              // Show loading indicator using the original screen context
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (loadingContext) => const Center(child: CircularProgressIndicator()),
+              );
+
+              try {
+                await provider.resetDataForDate(date);
+                
+                if (context.mounted) {
+                  Navigator.pop(context); // Close loading indicator
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Data reset for $dateStr'),
+                      backgroundColor: Colors.redAccent,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  Navigator.pop(context); // Close loading indicator
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error resetting data: $e'),
+                      backgroundColor: Colors.red,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  );
+                }
+              }
+            },
+            child: const Text('Reset Data', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
 }

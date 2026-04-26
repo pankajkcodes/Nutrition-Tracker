@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:nutrition_tracker/features/nutrition/screens/dashboard_screen.dart';
 import 'package:nutrition_tracker/features/profile/screens/profile_screen.dart';
 import 'package:nutrition_tracker/features/nutrition/widgets/add_food_dialog.dart';
+import 'package:nutrition_tracker/features/nutrition/screens/meals_screen.dart';
+import 'package:nutrition_tracker/features/nutrition/screens/insights_screen.dart';
 import 'package:nutrition_tracker/core/theme/app_colors.dart';
 
 class MainNavigationScreen extends StatefulWidget {
@@ -16,8 +18,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   final List<Widget> _screens = [
     const DashboardScreen(),
-    const PlaceholderWidget(title: 'Meals'),
-    const PlaceholderWidget(title: 'Insights'),
+    const MealsScreen(),
+    const InsightsScreen(),
     const ProfileScreen(),
   ];
 

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nutrition_tracker/features/nutrition/models/food_entry.dart';
+import 'package:nutrition_tracker/features/nutrition/models/food_library_item.dart';
 import 'package:nutrition_tracker/features/profile/models/user_profile.dart';
 
 class NutritionService {
@@ -106,5 +107,61 @@ class NutritionService {
       }
       return data;
     });
+  }
+
+  // --- Food Library ---
+
+  Stream<List<FoodLibraryItem>> getFoodLibrary() {
+    // Firestore's snapshots() has built-in caching support. 
+    // It will return data from cache first if available and then update from server.
+    return _firestore.collection('food_library').snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) => FoodLibraryItem.fromFirestore(doc)).toList();
+    });
+  }
+
+  Future<void> seedFoodLibrary(List<FoodLibraryItem> items) async {
+    final collection = _firestore.collection('food_library');
+    final batch = _firestore.batch();
+    
+    // Fetch existing docs to clean up old random IDs from the first seed
+    final existingDocs = await collection.get();
+    final validIds = items.map((e) => e.id).toSet();
+
+    for (var doc in existingDocs.docs) {
+      if (!validIds.contains(doc.id)) {
+        batch.delete(doc.reference);
+      }
+    }
+
+    // Use SetOptions(merge: true) so it updates existing items and adds new ones
+    for (var item in items) {
+      final docRef = collection.doc(item.id); 
+      batch.set(docRef, item.toMap(), SetOptions(merge: true));
+    }
+    
+    await batch.commit();
+  }
+
+  Future<void> resetDailyData(String userId, DateTime date) async {
+    final batch = _firestore.batch();
+
+    // 1. Delete food logs for the date
+    final startOfDay = DateTime(date.year, date.month, date.day);
+    final endOfDay = startOfDay.add(const Duration(days: 1));
+
+    final logsSnapshot = await _getUserLogCollection(userId)
+        .where('timestamp', isGreaterThanOrEqualTo: startOfDay.toIso8601String())
+        .where('timestamp', isLessThan: endOfDay.toIso8601String())
+        .get();
+
+    for (var doc in logsSnapshot.docs) {
+      batch.delete(doc.reference);
+    }
+
+    // 2. Delete water tracking for the date
+    final waterDocRef = _getDailyTrackingDoc(userId, date);
+    batch.delete(waterDocRef);
+
+    await batch.commit();
   }
 }

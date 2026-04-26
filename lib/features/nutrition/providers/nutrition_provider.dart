@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nutrition_tracker/features/nutrition/models/food_entry.dart';
+import 'package:nutrition_tracker/features/nutrition/models/food_library_item.dart';
 import 'package:nutrition_tracker/features/nutrition/services/nutrition_service.dart';
 import 'package:nutrition_tracker/features/nutrition/services/ai_service.dart';
 import 'package:nutrition_tracker/features/auth/providers/auth_provider.dart';
@@ -23,6 +24,9 @@ class NutritionProvider extends ChangeNotifier {
   StreamSubscription? _waterSubscription;
   StreamSubscription? _yearlyLogsSubscription;
   StreamSubscription? _yearlyWaterSubscription;
+  StreamSubscription? _foodLibrarySubscription;
+
+  List<FoodLibraryItem> _foodLibrary = [];
 
   Map<DateTime, int> _yearlyProgress = {};
   List<FoodEntry> _lastYearlyLogs = [];
@@ -38,6 +42,7 @@ class NutritionProvider extends ChangeNotifier {
   Map<DateTime, int> get yearlyProgress => _yearlyProgress;
   List<FoodEntry> get yearlyLogs => _lastYearlyLogs;
   int get heatmapYear => _heatmapYear;
+  List<FoodLibraryItem> get foodLibrary => _foodLibrary;
 
   double get totalCalories => _todayLogs.fold(0, (sum, item) => sum + item.calories);
   double get totalProtein => _todayLogs.fold(0, (sum, item) => sum + item.protein);
@@ -77,6 +82,7 @@ class NutritionProvider extends ChangeNotifier {
     _listenToLogs();
     _listenToWater();
     _listenToYearlyData();
+    _listenToFoodLibrary();
   }
 
   void setSelectedDate(DateTime date) {
@@ -260,6 +266,24 @@ class NutritionProvider extends ChangeNotifier {
     if (water != null) _waterGoal = water;
     _updateYearlyProgress(_lastYearlyLogs, _lastYearlyWater);
     notifyListeners();
+  }
+
+  void _listenToFoodLibrary() {
+    _foodLibrarySubscription?.cancel();
+    _foodLibrarySubscription = _nutritionService.getFoodLibrary().listen((items) {
+      _foodLibrary = items;
+      notifyListeners();
+    });
+  }
+
+  Future<void> seedFoodLibrary(List<FoodLibraryItem> items) async {
+    await _nutritionService.seedFoodLibrary(items);
+  }
+
+  Future<void> resetDataForDate(DateTime date) async {
+    if (!authProvider.isAuthenticated) return;
+    await _nutritionService.resetDailyData(authProvider.user!.uid, date);
+    // The stream listeners will automatically update _todayLogs and _totalWater
   }
 
   @override
