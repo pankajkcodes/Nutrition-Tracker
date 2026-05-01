@@ -7,6 +7,7 @@ import 'package:nutrition_tracker/features/nutrition/widgets/nutrient_progress_c
 import 'package:nutrition_tracker/features/nutrition/screens/ai_scanner_screen.dart';
 import 'package:nutrition_tracker/features/nutrition/screens/manual_entry_screen.dart';
 import 'package:nutrition_tracker/core/theme/app_colors.dart';
+import 'package:nutrition_tracker/core/providers/navigation_provider.dart';
 import 'package:nutrition_tracker/features/nutrition/screens/activity_heatmap_screen.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -25,47 +26,26 @@ class DashboardScreen extends StatelessWidget {
       backgroundColor: AppColors.background, // Centralized background color
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 10),
+              const SizedBox(height: 4),
               // Header
               _buildHeader(context, user),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
 
               // Goal Progress Section
               _buildGoalProgressCard(context, nutritionProvider.healthScore),
               const SizedBox(height: 16),
 
-              // Activity Heatmap Button
-              Center(
-                child: TextButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const ActivityHeatmapScreen()),
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.calendar_month_rounded,
-                    color: AppColors.indigo,
-                  ),
-                  label: const Text(
-                    'View Yearly Activity',
-                    style: TextStyle(
-                      color: AppColors.indigo,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
               // Today's Progress Section
-              _buildSectionHeader('Today\'s Progress', 'Edit Goals', () {}),
-              const SizedBox(height: 16),
+              _buildSectionHeader(
+                'Today\'s Progress',
+                'Edit Goals',
+                () => _showEditGoalsDialog(context, nutritionProvider),
+              ),
+              const SizedBox(height: 8),
               NutrientProgressCard(
                 title: 'Energy (Calories)',
                 value:
@@ -99,7 +79,7 @@ class DashboardScreen extends StatelessWidget {
               // Water card with quick-add button
               _buildWaterCard(context, nutritionProvider),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 8),
 
               // Add Your Meal Section
               const Text(
@@ -120,7 +100,7 @@ class DashboardScreen extends StatelessWidget {
                       () => _handleAiScan(context),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: _buildActionCard(
                       context,
@@ -139,7 +119,7 @@ class DashboardScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 100), // Space for bottom bar
+              const SizedBox(height: 60), // Space for bottom bar
             ],
           ),
         ),
@@ -293,7 +273,7 @@ class DashboardScreen extends StatelessWidget {
             onTap: () => _selectDate(context, nutritionProvider),
             borderRadius: BorderRadius.circular(12),
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+              padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 color: Colors.transparent,
@@ -303,7 +283,7 @@ class DashboardScreen extends StatelessWidget {
                 children: [
                   const Text(
                     'Dashboard',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   Row(
                     children: [
@@ -329,13 +309,34 @@ class DashboardScreen extends StatelessWidget {
           ),
         ),
 
-        CircleAvatar(
-          radius: 18,
-          backgroundColor: Colors.grey[200],
-          child: Text(
-            (userProfile?.name ?? user?.displayName ?? user?.email ?? 'U')[0]
-                .toUpperCase(),
-            style: const TextStyle(fontWeight: FontWeight.bold),
+        IconButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const ActivityHeatmapScreen(),
+              ),
+            );
+          },
+          icon: const Icon(
+            Icons.calendar_month_rounded,
+            color: AppColors.indigo,
+            size: 24,
+          ),
+          tooltip: 'View Activity',
+        ),
+        const SizedBox(width: 8),
+        InkWell(
+          onTap: () => context.read<NavigationProvider>().setIndex(3),
+          borderRadius: BorderRadius.circular(18),
+          child: CircleAvatar(
+            radius: 18,
+            backgroundColor: Colors.grey[200],
+            child: Text(
+              (userProfile?.name ?? user?.displayName ?? user?.email ?? 'U')[0]
+                  .toUpperCase(),
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
         ),
       ],
@@ -350,10 +351,10 @@ class DashboardScreen extends StatelessWidget {
         : const Color(0xFFF44336);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: accentColor.withValues(alpha: 0.08)),
         boxShadow: [
           BoxShadow(
@@ -375,7 +376,7 @@ class DashboardScreen extends StatelessWidget {
                   const Text(
                     'Daily Goal Progress',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: Colors.grey,
                     ),
@@ -390,13 +391,13 @@ class DashboardScreen extends StatelessWidget {
                             ? 'On Track'
                             : 'Starting Out',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: accentColor,
                         ),
                       ),
                       const SizedBox(width: 6),
-                      Icon(Icons.stars_rounded, size: 20, color: accentColor),
+                      Icon(Icons.stars_rounded, size: 18, color: accentColor),
                     ],
                   ),
                 ],
@@ -424,19 +425,22 @@ class DashboardScreen extends StatelessWidget {
                           SizedBox(height: 16),
                           _GoalProgressFactorRow(
                             label: 'Calories (40%)',
-                            description: 'Staying within your daily energy gap.',
+                            description:
+                                'Staying within your daily energy gap.',
                             color: Colors.orange,
                           ),
                           SizedBox(height: 12),
                           _GoalProgressFactorRow(
                             label: 'Protein (40%)',
-                            description: 'Meeting your muscle maintenance needs.',
+                            description:
+                                'Meeting your muscle maintenance needs.',
                             color: Colors.indigo,
                           ),
                           SizedBox(height: 12),
                           _GoalProgressFactorRow(
                             label: 'Water (20%)',
-                            description: 'Maintaining optimal hydration levels.',
+                            description:
+                                'Maintaining optimal hydration levels.',
                             color: Colors.blue,
                           ),
                         ],
@@ -452,7 +456,7 @@ class DashboardScreen extends StatelessWidget {
                 },
                 icon: const Icon(
                   Icons.info_outline_rounded,
-                  size: 20,
+                  size: 16,
                   color: Colors.grey,
                 ),
                 padding: EdgeInsets.zero,
@@ -460,7 +464,7 @@ class DashboardScreen extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
@@ -492,7 +496,7 @@ class DashboardScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 4),
                     Text(
                       score >= 70
                           ? 'Amazing work today! 🎉'
@@ -502,7 +506,7 @@ class DashboardScreen extends StatelessWidget {
                       style: TextStyle(
                         color: Colors.grey[700],
                         fontWeight: FontWeight.w500,
-                        fontSize: 14,
+                        fontSize: 12,
                       ),
                     ),
                   ],
@@ -553,39 +557,46 @@ class DashboardScreen extends StatelessWidget {
   ) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(16),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
         decoration: BoxDecoration(
           color: bgColor,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.all(7),
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: iconColor),
+              child: Icon(icon, color: iconColor, size: 20),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     title,
                     style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                       fontSize: 14,
+                      letterSpacing: -0.2,
                     ),
                   ),
                   Text(
                     subtitle,
-                    style: TextStyle(color: Colors.black54, fontSize: 10),
+                    style: TextStyle(
+                      color: Colors.black54, 
+                      fontSize: 10,
+                      height: 1.1,
+                    ),
                     maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -602,8 +613,8 @@ class DashboardScreen extends StatelessWidget {
     final percentage = (progress * 100).toInt();
 
     return Container(
-      margin: const EdgeInsets.only(top: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -621,10 +632,10 @@ class DashboardScreen extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(7),
                 decoration: BoxDecoration(
                   color: Colors.blue[50],
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Icon(
                   Icons.water_drop_rounded,
@@ -632,7 +643,7 @@ class DashboardScreen extends StatelessWidget {
                   size: 20,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -641,7 +652,7 @@ class DashboardScreen extends StatelessWidget {
                       'Water Intake',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 15,
+                        fontSize: 14,
                         color: Colors.black87,
                       ),
                     ),
@@ -673,7 +684,7 @@ class DashboardScreen extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -717,7 +728,7 @@ class DashboardScreen extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 8),
           // Quick-add button with selection popup
           SizedBox(
             width: double.infinity,
@@ -737,7 +748,7 @@ class DashboardScreen extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                padding: const EdgeInsets.symmetric(vertical: 6),
                 disabledBackgroundColor: Colors.grey[100],
               ),
             ),
@@ -847,6 +858,103 @@ class DashboardScreen extends StatelessWidget {
       ),
     );
   }
+
+  void _showEditGoalsDialog(BuildContext context, NutritionProvider provider) {
+    final calorieController = TextEditingController(
+      text: provider.calorieGoal.toInt().toString(),
+    );
+    final proteinController = TextEditingController(
+      text: provider.proteinGoal.toInt().toString(),
+    );
+    final waterController = TextEditingController(
+      text: provider.waterGoal.toStringAsFixed(1),
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Edit Daily Goals',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: calorieController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Calories (kcal)',
+                  prefixIcon: Icon(
+                    Icons.local_fire_department_rounded,
+                    color: Colors.orange,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: proteinController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Protein (g)',
+                  prefixIcon: Icon(
+                    Icons.fitness_center_rounded,
+                    color: Colors.indigo,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: waterController,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                decoration: const InputDecoration(
+                  labelText: 'Water (Liters)',
+                  prefixIcon: Icon(
+                    Icons.water_drop_rounded,
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final cals = double.tryParse(calorieController.text);
+              final pro = double.tryParse(proteinController.text);
+              final water = double.tryParse(waterController.text);
+
+              if (cals != null && pro != null && water != null) {
+                provider.updateGoals(cals, pro, water: water);
+                Navigator.pop(context);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please enter valid numbers')),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.indigo,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _GoalProgressFactorRow extends StatelessWidget {
@@ -869,10 +977,7 @@ class _GoalProgressFactorRow extends StatelessWidget {
           margin: const EdgeInsets.only(top: 4),
           width: 8,
           height: 8,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -888,10 +993,7 @@ class _GoalProgressFactorRow extends StatelessWidget {
               ),
               Text(
                 description,
-                style: const TextStyle(
-                  color: Colors.black54,
-                  fontSize: 12,
-                ),
+                style: const TextStyle(color: Colors.black54, fontSize: 12),
               ),
             ],
           ),

@@ -102,4 +102,9 @@ class AuthProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
   }
+
+  void updateUserProfile(UserProfile profile) {
+    _userProfile = profile;
+    notifyListeners();
+  }
 }

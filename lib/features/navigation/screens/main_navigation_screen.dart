@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nutrition_tracker/features/nutrition/screens/dashboard_screen.dart';
 import 'package:nutrition_tracker/features/profile/screens/profile_screen.dart';
 import 'package:nutrition_tracker/features/nutrition/widgets/add_food_dialog.dart';
 import 'package:nutrition_tracker/features/nutrition/screens/meals_screen.dart';
 import 'package:nutrition_tracker/features/nutrition/screens/insights_screen.dart';
 import 'package:nutrition_tracker/core/theme/app_colors.dart';
+import 'package:nutrition_tracker/core/providers/navigation_provider.dart';
+import 'package:provider/provider.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -14,7 +17,6 @@ class MainNavigationScreen extends StatefulWidget {
 }
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
-  int _currentIndex = 0;
 
   final List<Widget> _screens = [
     const DashboardScreen(),
@@ -25,52 +27,95 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8.0,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavItem(Icons.home_rounded, 'Dashboard', 0),
-            _buildNavItem(Icons.restaurant_menu_rounded, 'Meals', 1),
-            const SizedBox(width: 40), // Space for FAB
-            _buildNavItem(Icons.insights_rounded, 'Insights', 2),
-            _buildNavItem(Icons.person_rounded, 'Profile', 3),
-          ],
+    final navProvider = context.watch<NavigationProvider>();
+
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        
+        final shouldPop = await _showExitConfirmationDialog(context);
+        if (shouldPop ?? false) {
+          SystemNavigator.pop();
+        }
+      },
+      child: Scaffold(
+        body: IndexedStack(
+          index: navProvider.currentIndex,
+          children: _screens,
         ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddOptions(context),
-        backgroundColor: AppColors.indigo, // Indigo color like the FAB in design
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add, color: Colors.white, size: 32),
+        bottomNavigationBar: BottomAppBar(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          height: 60,
+          shape: const CircularNotchedRectangle(),
+          notchMargin: 6.0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNavItem(context, Icons.home_rounded, 'Home', 0),
+              _buildNavItem(context, Icons.restaurant_menu_rounded, 'Meals', 1),
+              const SizedBox(width: 32),
+              _buildNavItem(context, Icons.insights_rounded, 'Insights', 2),
+              _buildNavItem(context, Icons.person_rounded, 'Profile', 3),
+            ],
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: SizedBox(
+          width: 48,
+          height: 48,
+          child: FloatingActionButton(
+            onPressed: () => _showAddOptions(context),
+            backgroundColor: AppColors.indigo,
+            shape: const CircleBorder(),
+            elevation: 4,
+            child: const Icon(Icons.add, color: Colors.white, size: 24),
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, int index) {
-    final isSelected = _currentIndex == index;
+  Future<bool?> _showExitConfirmationDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Exit App'),
+        content: const Text('Are you sure you want to exit the Nutrition Tracker?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Exit', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(BuildContext context, IconData icon, String label, int index) {
+    final navProvider = context.read<NavigationProvider>();
+    final isSelected = navProvider.currentIndex == index;
     return GestureDetector(
-      onTap: () => setState(() => _currentIndex = index),
+      onTap: () => navProvider.setIndex(index),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
             icon,
             color: isSelected ? AppColors.indigo : Colors.grey,
-            size: 28,
+            size: 22,
           ),
+          const SizedBox(height: 2),
           Text(
             label,
             style: TextStyle(
               color: isSelected ? AppColors.indigo : Colors.grey,
-              fontSize: 12,
+              fontSize: 10,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
           ),

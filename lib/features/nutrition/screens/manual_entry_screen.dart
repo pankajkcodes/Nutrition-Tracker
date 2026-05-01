@@ -66,15 +66,15 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Text(
-                'Enter Details Manually',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                'Quick Log Meal',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               Text(
-                'Enter the nutrition facts for your meal.',
-                style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                'Enter nutrition facts below.',
+                style: TextStyle(color: Colors.grey[600], fontSize: 13),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 24),
               _buildTextField(
                 controller: _nameController,
                 label: 'Food Name',
@@ -105,7 +105,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 48),
+              const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: _isLoading ? null : _saveEntry,
                 style: ElevatedButton.styleFrom(

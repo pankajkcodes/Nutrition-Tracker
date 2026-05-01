@@ -12,7 +12,7 @@ class NutritionProvider extends ChangeNotifier {
   final NutritionService _nutritionService = NutritionService();
   final AiService _aiService = AiService();
   final _uuid = const Uuid();
-  final AuthProvider authProvider;
+  AuthProvider authProvider;
 
   List<FoodEntry> _todayLogs = [];
   DateTime _selectedDate = DateTime.now();
@@ -43,6 +43,29 @@ class NutritionProvider extends ChangeNotifier {
   List<FoodEntry> get yearlyLogs => _lastYearlyLogs;
   int get heatmapYear => _heatmapYear;
   List<FoodLibraryItem> get foodLibrary => _foodLibrary;
+  List<FoodLibraryItem> get starredMeals {
+    if (authProvider.userProfile == null) return [];
+    return _foodLibrary.where((item) => authProvider.userProfile!.starredMealIds.contains(item.id)).toList();
+  }
+
+  bool isStarred(String itemId) {
+    return authProvider.userProfile?.starredMealIds.contains(itemId) ?? false;
+  }
+
+  Future<void> toggleStar(String itemId) async {
+    if (!authProvider.isAuthenticated || authProvider.userProfile == null) return;
+    
+    final currentStarred = List<String>.from(authProvider.userProfile!.starredMealIds);
+    if (currentStarred.contains(itemId)) {
+      currentStarred.remove(itemId);
+    } else {
+      currentStarred.add(itemId);
+    }
+
+    final updatedProfile = authProvider.userProfile!.copyWith(starredMealIds: currentStarred);
+    await _nutritionService.saveUserProfile(updatedProfile);
+    authProvider.updateUserProfile(updatedProfile);
+  }
 
   double get totalCalories => _todayLogs.fold(0, (sum, item) => sum + item.calories);
   double get totalProtein => _todayLogs.fold(0, (sum, item) => sum + item.protein);
@@ -77,12 +100,57 @@ class NutritionProvider extends ChangeNotifier {
   int get waterGlasses => (totalWater * 4).round(); // 1L = 4 glasses
   int get waterGlassGoal => (waterGoal * 4).round();
 
+  int get currentStreak {
+    if (_yearlyProgress.isEmpty) return 0;
+
+    int streak = 0;
+    DateTime now = DateTime.now();
+    DateTime date = DateTime(now.year, now.month, now.day);
+
+    // If no progress today, check yesterday to see if streak is still alive
+    if (_yearlyProgress[date] == null || _yearlyProgress[date]! == 0) {
+      date = date.subtract(const Duration(days: 1));
+    }
+
+    while (_yearlyProgress[date] != null && _yearlyProgress[date]! > 0) {
+      streak++;
+      date = date.subtract(const Duration(days: 1));
+    }
+
+    return streak;
+  }
+
 
   NutritionProvider({required this.authProvider}) {
+    _init();
+  }
+
+  void _init() {
+    if (authProvider.userProfile != null) {
+      _calorieGoal = authProvider.userProfile!.calorieGoal;
+      _proteinGoal = authProvider.userProfile!.proteinGoal;
+      _waterGoal = authProvider.userProfile!.waterGoal;
+    }
+
     _listenToLogs();
     _listenToWater();
     _listenToYearlyData();
     _listenToFoodLibrary();
+  }
+
+  void updateAuthProvider(AuthProvider newAuthProvider) {
+    final oldUserId = authProvider.user?.uid;
+    final newUserId = newAuthProvider.user?.uid;
+
+    authProvider = newAuthProvider;
+
+    if (newUserId != oldUserId) {
+      // Identity changed, must restart everything
+      _init();
+    } else {
+      // Identity is same, just refresh UI (e.g. for starred items)
+      notifyListeners();
+    }
   }
 
   void setSelectedDate(DateTime date) {
@@ -260,12 +328,22 @@ class NutritionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateGoals(double calorie, double protein, {double? water}) {
+  Future<void> updateGoals(double calorie, double protein, {double? water}) async {
     _calorieGoal = calorie;
     _proteinGoal = protein;
     if (water != null) _waterGoal = water;
     _updateYearlyProgress(_lastYearlyLogs, _lastYearlyWater);
     notifyListeners();
+
+    if (authProvider.isAuthenticated && authProvider.userProfile != null) {
+      final updatedProfile = authProvider.userProfile!.copyWith(
+        calorieGoal: _calorieGoal,
+        proteinGoal: _proteinGoal,
+        waterGoal: _waterGoal,
+      );
+      await _nutritionService.saveUserProfile(updatedProfile);
+      authProvider.updateUserProfile(updatedProfile);
+    }
   }
 
   void _listenToFoodLibrary() {
@@ -292,6 +370,7 @@ class NutritionProvider extends ChangeNotifier {
     _waterSubscription?.cancel();
     _yearlyLogsSubscription?.cancel();
     _yearlyWaterSubscription?.cancel();
+    _foodLibrarySubscription?.cancel();
     super.dispose();
   }
 }

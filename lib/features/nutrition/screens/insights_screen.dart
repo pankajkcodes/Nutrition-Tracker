@@ -21,20 +21,20 @@ class InsightsScreen extends StatelessWidget {
           _buildSliverAppBar(),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildWeeklyPerformance(nutritionProvider),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   _buildMacronutrientMix(nutritionProvider),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   _buildTopFoods(nutritionProvider),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   _buildConsistencyStreak(nutritionProvider, context),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   _buildAiInsightsCard(),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 30),
                 ],
               ),
             ),
@@ -46,7 +46,7 @@ class InsightsScreen extends StatelessWidget {
 
   Widget _buildSliverAppBar() {
     return SliverAppBar(
-      expandedHeight: 80,
+      expandedHeight: 60,
       floating: false,
       pinned: true,
       backgroundColor: AppColors.background,
@@ -59,7 +59,7 @@ class InsightsScreen extends StatelessWidget {
           style: TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.bold,
-            fontSize: 22,
+            fontSize: 20,
           ),
         ),
       ),
@@ -87,7 +87,7 @@ class InsightsScreen extends StatelessWidget {
     if (maxVal == 0) maxVal = 2000;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -115,9 +115,9 @@ class InsightsScreen extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           SizedBox(
-            height: 100,
+            height: 80,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -132,7 +132,7 @@ class InsightsScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Container(
-                        height: 80 * heightFactor,
+                        height: 60 * heightFactor,
                         margin: const EdgeInsets.symmetric(horizontal: 4),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
@@ -273,33 +273,33 @@ class InsightsScreen extends StatelessWidget {
     final topItems = sortedEntries.take(3).toList();
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Top Logged Foods (This Week)',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            'Top Logged (Week)',
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           if (topItems.isEmpty)
             Text('Log some meals to see insights!', style: TextStyle(color: Colors.grey[400]))
           else
             ...topItems.map((entry) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.only(bottom: 8),
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
                       color: AppColors.indigo.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(Icons.star_rounded, color: AppColors.indigo, size: 18),
+                    child: const Icon(Icons.star_rounded, color: AppColors.indigo, size: 16),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -310,7 +310,7 @@ class InsightsScreen extends StatelessWidget {
                   ),
                   Text(
                     '${entry.value} times',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 13, fontWeight: FontWeight.w500),
+                    style: TextStyle(color: Colors.grey[600], fontSize: 11, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -341,35 +341,35 @@ class InsightsScreen extends StatelessWidget {
         MaterialPageRoute(builder: (context) => const ActivityHeatmapScreen()),
       ),
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [Color(0xFF6366F1), Color(0xFF4F46E5)],
           ),
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
               color: AppColors.indigo.withValues(alpha: 0.3),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
         child: Row(
           children: [
-            const Icon(Icons.local_fire_department_rounded, color: Colors.orange, size: 40),
-            const SizedBox(width: 16),
+            const Icon(Icons.local_fire_department_rounded, color: Colors.orange, size: 32),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     '$streak Day Streak!',
-                    style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const Text(
                     'Keep logging to maintain your habit.',
-                    style: TextStyle(color: Colors.white70, fontSize: 13),
+                    style: TextStyle(color: Colors.white70, fontSize: 11),
                   ),
                 ],
               ),
@@ -383,11 +383,11 @@ class InsightsScreen extends StatelessWidget {
 
   Widget _buildAiInsightsCard() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.indigo.withValues(alpha: 0.2)),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.indigo.withValues(alpha: 0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -395,24 +395,24 @@ class InsightsScreen extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   color: Colors.purple.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.auto_awesome_rounded, color: Colors.purple, size: 20),
+                child: const Icon(Icons.auto_awesome_rounded, color: Colors.purple, size: 16),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               const Text(
                 'AI Personal Insight',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 10),
           const Text(
             'You tend to reach your protein goal 40% more often on days you log eggs or salmon. Keep it up!',
-            style: TextStyle(color: AppColors.textPrimary, fontSize: 14, height: 1.5, fontWeight: FontWeight.w500),
+            style: TextStyle(color: AppColors.textPrimary, fontSize: 12, height: 1.4, fontWeight: FontWeight.w500),
           ),
         ],
       ),

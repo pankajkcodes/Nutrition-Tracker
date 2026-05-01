@@ -5,17 +5,14 @@ class HealthScoreGauge extends StatefulWidget {
   final int score;
   final double size;
 
-  const HealthScoreGauge({
-    super.key,
-    required this.score,
-    this.size = 200,
-  });
+  const HealthScoreGauge({super.key, required this.score, this.size = 200});
 
   @override
   State<HealthScoreGauge> createState() => _HealthScoreGaugeState();
 }
 
-class _HealthScoreGaugeState extends State<HealthScoreGauge> with SingleTickerProviderStateMixin {
+class _HealthScoreGaugeState extends State<HealthScoreGauge>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -26,9 +23,10 @@ class _HealthScoreGaugeState extends State<HealthScoreGauge> with SingleTickerPr
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     );
-    _animation = Tween<double>(begin: 0, end: widget.score.toDouble()).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
-    );
+    _animation = Tween<double>(
+      begin: 0,
+      end: widget.score.toDouble(),
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
     _controller.forward();
   }
 
@@ -36,10 +34,13 @@ class _HealthScoreGaugeState extends State<HealthScoreGauge> with SingleTickerPr
   void didUpdateWidget(HealthScoreGauge oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.score != widget.score) {
-      _animation = Tween<double>(
-        begin: _animation.value,
-        end: widget.score.toDouble(),
-      ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+      _animation =
+          Tween<double>(
+            begin: _animation.value,
+            end: widget.score.toDouble(),
+          ).animate(
+            CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
+          );
       _controller.reset();
       _controller.forward();
     }
@@ -77,7 +78,9 @@ class _HealthScoreGaugeState extends State<HealthScoreGauge> with SingleTickerPr
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: _getScoreColor(_animation.value).withValues(alpha: 0.1),
+                        color: _getScoreColor(
+                          _animation.value,
+                        ).withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -164,11 +167,7 @@ class GaugePainter extends CustomPainter {
     // Progress arc with gradient
     final progressPaint = Paint()
       ..shader = SweepGradient(
-        colors: [
-          color.withValues(alpha: 0.5),
-          color,
-          color,
-        ],
+        colors: [color.withValues(alpha: 0.5), color, color],
         stops: const [0.0, 0.5, 1.0],
         startAngle: startAngle,
         endAngle: startAngle + sweepAngle,
@@ -178,7 +177,7 @@ class GaugePainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final progressSweepAngle = sweepAngle * (score / 100);
-    
+
     // Add glow effect
     final glowPaint = Paint()
       ..color = color.withValues(alpha: 0.3)
@@ -195,7 +194,7 @@ class GaugePainter extends CustomPainter {
         false,
         glowPaint,
       );
-      
+
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
         startAngle,
@@ -208,12 +207,12 @@ class GaugePainter extends CustomPainter {
     // Draw dots as markers
     final markerPaint = Paint()..color = Colors.grey[300]!;
     for (int i = 0; i <= 5; i++) {
-        final angle = startAngle + (sweepAngle * (i / 5));
-        final offset = Offset(
-            center.dx + (radius + 20) * math.cos(angle),
-            center.dy + (radius + 20) * math.sin(angle),
-        );
-        canvas.drawCircle(offset, 2, markerPaint);
+      final angle = startAngle + (sweepAngle * (i / 5));
+      final offset = Offset(
+        center.dx + (radius + 20) * math.cos(angle),
+        center.dy + (radius + 20) * math.sin(angle),
+      );
+      canvas.drawCircle(offset, 2, markerPaint);
     }
   }
 

@@ -3,6 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:nutrition_tracker/features/auth/providers/auth_provider.dart';
 import 'package:nutrition_tracker/features/nutrition/providers/nutrition_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:nutrition_tracker/features/profile/screens/settings_screen.dart';
+import 'package:nutrition_tracker/core/common/screens/web_view_screen.dart';
+import 'package:nutrition_tracker/core/common/widgets/option_tile.dart';
+import 'package:nutrition_tracker/features/profile/widgets/profile_stats_bar.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -16,187 +21,329 @@ class ProfileScreen extends StatelessWidget {
     final userProfile = authProvider.userProfile;
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Profile', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit_outlined),
-            tooltip: 'Edit Profile',
-            onPressed: () => _showEditNameDialog(context, userProfile?.name ?? user?.displayName ?? ''),
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
+      backgroundColor: const Color(0xFFF8FAFC),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(height: 20),
-            Center(
-              child: Stack(
-                children: [
-                  Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [
-                          theme.colorScheme.primary,
-                          theme.colorScheme.primaryContainer,
-                        ],
+            // Premium Gradient Header
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  height: 170,
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                    ),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(40),
+                      bottomRight: Radius.circular(40),
+                    ),
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: -20,
+                        right: -20,
+                        child: Container(
+                          width: 150,
+                          height: 150,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withValues(alpha: 0.1),
+                          ),
+                        ),
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
+                      Positioned(
+                        bottom: 40,
+                        left: -30,
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withValues(alpha: 0.05),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Profile',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        IconButton(
+                          icon: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.2),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.edit_rounded,
+                              size: 20,
+                              color: Colors.white,
+                            ),
+                          ),
+                          onPressed: () => _showEditNameDialog(
+                            context,
+                            userProfile?.name ?? user?.displayName ?? '',
+                          ),
                         ),
                       ],
                     ),
-                    child: Center(
-                      child: Text(
-                        (userProfile?.name ?? user?.displayName ?? user?.email ?? '?')[0].toUpperCase(),
-                        style: const TextStyle(
-                          fontSize: 48,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
                   ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
-                            blurRadius: 8,
+                ),
+              ],
+            ),
+            // Floating Profile Card
+            Transform.translate(
+              offset: const Offset(0, -40),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Stack(
+                        children: [
+                          Container(
+                            width: 64,
+                            height: 64,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [Color(0xFF818CF8), Color(0xFF6366F1)],
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                (userProfile?.name ??
+                                        user?.displayName ??
+                                        user?.email ??
+                                        '?')[0]
+                                    .toUpperCase(),
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Container(
+                                padding: const EdgeInsets.all(3),
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF10B981),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  color: Colors.white,
+                                  size: 8,
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                      child: Icon(
-                        Icons.verified_user_rounded,
-                        color: theme.colorScheme.primary,
-                        size: 20,
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              userProfile?.name ??
+                                  user?.displayName ??
+                                  'User Name',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF1E293B),
+                                letterSpacing: -0.5,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              user?.email ?? '',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[500],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
-            const SizedBox(height: 16),
-            Text(
-              userProfile?.name ?? user?.displayName ?? 'No Name Provided',
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
+            const SizedBox(height: 0),
+            ProfileStatsBar(
+              mealsCount: nutritionProvider.yearlyLogs.length,
+              streakCount: nutritionProvider.currentStreak,
+              healthScore: nutritionProvider.healthScore,
             ),
-            const SizedBox(height: 4),
-            Text(
-              user?.email ?? '',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: Colors.black54,
-              ),
-            ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 20),
+            // Settings List
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildOptionTile(
+                  _buildSectionTitle('ACCOUNT'),
+                  OptionTile(
                     icon: Icons.share_rounded,
                     color: Colors.blue,
                     title: 'Share App',
-                    onTap: () {},
+                    onTap: () =>
+                        Share.share('Check out this Nutrition Tracker!'),
                   ),
-                  _buildOptionTile(
+                  OptionTile(
                     icon: Icons.star_rounded,
                     color: Colors.amber,
                     title: 'Rate Us',
                     onTap: () {},
                   ),
-                  _buildOptionTile(
+                  const SizedBox(height: 20),
+                  _buildSectionTitle('SUPPORT'),
+                  OptionTile(
                     icon: Icons.info_rounded,
                     color: Colors.teal,
                     title: 'About Us',
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const WebViewScreen(
+                            title: 'About Us',
+                            url: 'https://nutrition-trackerapp.web.app/about',
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                  _buildOptionTile(
+                  OptionTile(
                     icon: Icons.privacy_tip_rounded,
                     color: Colors.orange,
                     title: 'Privacy Policy',
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const WebViewScreen(
+                            title: 'Privacy Policy',
+                            url: 'https://nutrition-trackerapp.web.app/privacy',
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                  _buildOptionTile(
+                  OptionTile(
                     icon: Icons.settings_rounded,
-                    color: Colors.grey,
+                    color: Colors.blueGrey,
                     title: 'Settings',
-                    onTap: () {},
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SettingsScreen(),
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 24),
-                  _buildDangerZone(context, nutritionProvider),
-                  const SizedBox(height: 12),
-                  const Divider(height: 32),
-                  const SizedBox(height: 12),
-                  _buildOptionTile(
+                  const SizedBox(height: 20),
+                  _buildSectionTitle('DANGER ZONE'),
+                  OptionTile(
                     icon: Icons.logout_rounded,
                     color: Colors.red,
                     title: 'Logout',
                     onTap: () => _showLogoutDialog(context, authProvider),
                     isDestructive: true,
                   ),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),
-            const SizedBox(height: 40),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildOptionTile({
-    required IconData icon,
-    required Color color,
-    required String title,
-    required VoidCallback onTap,
-    bool isDestructive = false,
-  }) {
-    return ListTile(
-      onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      leading: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(icon, color: color, size: 22),
-      ),
-      title: Text(
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 8),
+      child: Text(
         title,
         style: TextStyle(
-          fontWeight: FontWeight.w600,
-          color: isDestructive ? Colors.red : Colors.black87,
-          fontSize: 16,
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          color: Colors.grey[400],
+          letterSpacing: 1.2,
         ),
-      ),
-      trailing: Icon(
-        Icons.chevron_right_rounded,
-        size: 20,
-        color: isDestructive ? Colors.red.withValues(alpha: 0.5) : Colors.grey[400],
       ),
     );
   }
+
+  Widget _buildCardGroup(List<Widget> children) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey[100]!),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(children: children),
+    );
+  }
+
 
   void _showLogoutDialog(BuildContext context, AuthProvider authProvider) {
     showDialog(
@@ -215,7 +362,10 @@ class ProfileScreen extends StatelessWidget {
               Navigator.pop(context); // Close dialog
               authProvider.signOut();
             },
-            child: const Text('Logout', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+            child: const Text(
+              'Logout',
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
@@ -232,8 +382,13 @@ class ProfileScreen extends StatelessWidget {
         return Consumer<AuthProvider>(
           builder: (consumerContext, authProvider, _) {
             return AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              title: const Text('Edit Profile', style: TextStyle(fontWeight: FontWeight.bold)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: const Text(
+                'Edit Profile',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               content: Form(
                 key: formKey,
                 child: TextFormField(
@@ -242,46 +397,70 @@ class ProfileScreen extends StatelessWidget {
                   decoration: InputDecoration(
                     labelText: 'Full Name',
                     prefixIcon: const Icon(Icons.person_outline),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   validator: (value) {
-                    if (value == null || value.trim().isEmpty) return 'Name cannot be empty';
+                    if (value == null || value.trim().isEmpty)
+                      return 'Name cannot be empty';
                     return null;
                   },
                 ),
               ),
               actions: [
                 TextButton(
-                  onPressed: authProvider.isLoading ? null : () => Navigator.pop(dialogContext),
+                  onPressed: authProvider.isLoading
+                      ? null
+                      : () => Navigator.pop(dialogContext),
                   child: const Text('Cancel'),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF62D2A2),
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   onPressed: authProvider.isLoading
                       ? null
                       : () async {
                           if (!formKey.currentState!.validate()) return;
 
-                          final success = await authProvider.updateProfileName(nameController.text.trim());
+                          final success = await authProvider.updateProfileName(
+                            nameController.text.trim(),
+                          );
 
                           if (!consumerContext.mounted) return;
                           Navigator.pop(dialogContext);
 
                           ScaffoldMessenger.of(consumerContext).showSnackBar(
                             SnackBar(
-                              content: Text(success ? 'Profile updated!' : (authProvider.error ?? 'Update failed')),
-                              backgroundColor: success ? const Color(0xFF62D2A2) : Colors.redAccent,
+                              content: Text(
+                                success
+                                    ? 'Profile updated!'
+                                    : (authProvider.error ?? 'Update failed'),
+                              ),
+                              backgroundColor: success
+                                  ? const Color(0xFF62D2A2)
+                                  : Colors.redAccent,
                               behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
                           );
                         },
                   child: authProvider.isLoading
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
                       : const Text('Save'),
                 ),
               ],
@@ -291,121 +470,23 @@ class ProfileScreen extends StatelessWidget {
       },
     );
   }
+}
 
-  Widget _buildDangerZone(BuildContext context, NutritionProvider provider) {
-    final theme = Theme.of(context);
-    final selectedDateStr = DateFormat('MMM dd, yyyy').format(provider.selectedDate);
-    final todayStr = DateFormat('MMM dd, yyyy').format(DateTime.now());
-    final isSelectedDateToday = provider.selectedDate.year == DateTime.now().year &&
-        provider.selectedDate.month == DateTime.now().month &&
-        provider.selectedDate.day == DateTime.now().day;
+class HeaderPatternPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 16, bottom: 12),
-          child: Text(
-            'DANGER ZONE',
-            style: theme.textTheme.labelLarge?.copyWith(
-              color: Colors.red[700],
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
-            ),
-          ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.red.withValues(alpha: 0.05),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.red.withValues(alpha: 0.1)),
-          ),
-          child: Column(
-            children: [
-              _buildOptionTile(
-                icon: Icons.history_rounded,
-                color: Colors.red[400]!,
-                title: 'Reset Selected Date ($selectedDateStr)',
-                onTap: () => _showResetConfirmationDialog(context, provider, provider.selectedDate, selectedDateStr),
-                isDestructive: true,
-              ),
-              if (!isSelectedDateToday)
-                _buildOptionTile(
-                  icon: Icons.today_rounded,
-                  color: Colors.red[400]!,
-                  title: 'Reset Today ($todayStr)',
-                  onTap: () => _showResetConfirmationDialog(context, provider, DateTime.now(), todayStr),
-                  isDestructive: true,
-                ),
-            ],
-          ),
-        ),
-      ],
-    );
+    for (var i = 0; i < size.width; i += 20) {
+      for (var j = 0; j < size.height; j += 20) {
+        canvas.drawCircle(Offset(i.toDouble(), j.toDouble()), 0.5, paint);
+      }
+    }
   }
 
-  void _showResetConfirmationDialog(
-    BuildContext context, 
-    NutritionProvider provider, 
-    DateTime date,
-    String dateStr,
-  ) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Reset Daily Data?'),
-        content: Text(
-          'This will permanently delete all food logs and water intake for $dateStr. This action cannot be undone.'
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(dialogContext); // Close confirmation dialog
-              
-              // Show loading indicator using the original screen context
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (loadingContext) => const Center(child: CircularProgressIndicator()),
-              );
-
-              try {
-                await provider.resetDataForDate(date);
-                
-                if (context.mounted) {
-                  Navigator.pop(context); // Close loading indicator
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Data reset for $dateStr'),
-                      backgroundColor: Colors.redAccent,
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                  );
-                }
-              } catch (e) {
-                if (context.mounted) {
-                  Navigator.pop(context); // Close loading indicator
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Error resetting data: $e'),
-                      backgroundColor: Colors.red,
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                  );
-                }
-              }
-            },
-            child: const Text('Reset Data', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
-          ),
-        ],
-      ),
-    );
-  }
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
