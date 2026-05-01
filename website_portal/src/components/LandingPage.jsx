@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Activity, Apple, Droplets, Target, ArrowRight, CheckCircle2 } from 'lucide-react';
+import logo from '../assets/logo.png';
 
 export default function LandingPage() {
   return (
@@ -8,9 +9,12 @@ export default function LandingPage() {
       {/* Navigation */}
       <nav className="fixed w-full z-50 top-0 border-b border-gray-100 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
-              <Activity className="text-white w-5 h-5" />
+          <div 
+            className="flex items-center gap-2 cursor-pointer" 
+            onClick={() => window.location.href = '/'}
+          >
+            <div className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-500/10 flex items-center justify-center p-1.5">
+              <img src={logo} alt="Logo" className="w-full h-full object-contain" />
             </div>
             <span className="font-bold text-xl tracking-tight text-gray-900 dark:text-white">
               NutritionTracker
@@ -23,7 +27,10 @@ export default function LandingPage() {
             <a href="#testimonials" className="text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">
               Testimonials
             </a>
-            <button className="px-4 py-2 text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100 rounded-full transition-all active:scale-95 shadow-sm">
+            <button 
+              onClick={() => window.open('https://play.google.com/store/apps/details?id=com.m.nutrition.tracker.app', '_blank')}
+              className="px-4 py-2 text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100 rounded-full transition-all active:scale-95 shadow-sm"
+            >
               Get the App
             </button>
           </div>
@@ -57,11 +64,17 @@ export default function LandingPage() {
           </p>
           
           <div className="flex flex-col sm:flex-row items-center gap-4 animate-fade-in-up animation-delay-300">
-            <button className="flex items-center gap-2 px-8 py-4 text-base font-semibold text-white bg-green-600 hover:bg-green-700 rounded-full transition-all hover:shadow-lg hover:shadow-green-500/25 active:scale-95">
+            <button 
+              onClick={() => window.open('https://play.google.com/store/apps/details?id=com.m.nutrition.tracker.app', '_blank')}
+              className="flex items-center gap-2 px-8 py-4 text-base font-semibold text-white bg-green-600 hover:bg-green-700 rounded-full transition-all hover:shadow-lg hover:shadow-green-500/25 active:scale-95"
+            >
               Download App
               <ArrowRight className="w-5 h-5" />
             </button>
-            <button className="flex items-center gap-2 px-8 py-4 text-base font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-full transition-all active:scale-95">
+            <button 
+              onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+              className="flex items-center gap-2 px-8 py-4 text-base font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-full transition-all active:scale-95"
+            >
               Learn More
             </button>
           </div>
@@ -123,8 +136,11 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="bg-white dark:bg-gray-950 py-12 border-t border-gray-100 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Activity className="text-green-500 w-6 h-6" />
+          <div 
+            className="flex items-center gap-2 cursor-pointer"
+            onClick={() => window.location.href = '/'}
+          >
+            <img src={logo} alt="Logo" className="w-8 h-8 object-contain" />
             <span className="font-bold text-lg text-gray-900 dark:text-white">NutritionTracker</span>
           </div>
           <p className="text-gray-500 dark:text-gray-400 text-sm">

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { auth } from '../firebase/config';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import logo from '../assets/logo.png';
 
 export default function Auth() {
   const [email, setEmail] = useState('');
@@ -25,9 +26,12 @@ export default function Auth() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white dark:bg-gray-800 p-10 rounded-2xl shadow-xl">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-            Admin Panel Login
+        <div className="flex flex-col items-center">
+          <div className="w-20 h-20 rounded-2xl bg-green-50 dark:bg-green-500/10 flex items-center justify-center p-3 mb-4 shadow-inner">
+            <img src={logo} alt="Logo" className="w-full h-full object-contain" />
+          </div>
+          <h2 className="text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+            Admin Portal
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
             Sign in to manage Nutrition Tracker

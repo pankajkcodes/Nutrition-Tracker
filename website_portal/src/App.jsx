@@ -11,6 +11,7 @@ import { Link, useLocation } from 'react-router-dom';
 import LandingPage from './components/LandingPage';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import AboutUs from './components/AboutUs';
+import logo from './assets/logo.png';
 
 function Layout({ children }) {
   const location = useLocation();
@@ -29,8 +30,19 @@ function Layout({ children }) {
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
         <div className="p-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Panel</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Nutrition Tracker</p>
+          <div 
+            className="flex items-center gap-3 mb-6 cursor-pointer group"
+            onClick={() => window.location.href = '/'}
+          >
+            <div className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-500/10 flex items-center justify-center p-1.5 border border-green-100 dark:border-green-500/20 group-hover:scale-105 transition-transform">
+              <img src={logo} alt="Logo" className="w-full h-full object-contain" />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-gray-900 dark:text-white leading-tight">Nutrition</h1>
+              <p className="text-xs text-green-600 dark:text-green-400 font-semibold uppercase tracking-wider">Tracker</p>
+            </div>
+          </div>
+          <div className="h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent mb-6" />
         </div>
         <nav className="flex-1 px-4 space-y-2">
           {navItems.map((item) => {
