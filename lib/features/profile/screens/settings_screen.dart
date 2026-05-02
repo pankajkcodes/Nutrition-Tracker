@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:nutrition_tracker/features/auth/providers/auth_provider.dart';
 import 'package:nutrition_tracker/features/nutrition/providers/nutrition_provider.dart';
 import 'package:nutrition_tracker/core/common/widgets/option_tile.dart';
+import 'package:nutrition_tracker/core/common/screens/web_view_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -85,6 +86,23 @@ class SettingsScreen extends StatelessWidget {
                 color: Colors.red[400]!,
                 title: 'Reset Selected Date ($selectedDateStr)',
                 onTap: () => _selectAndResetDate(context, provider),
+                isDestructive: true,
+              ),
+              OptionTile(
+                icon: Icons.person_remove_rounded,
+                color: Colors.red[700]!,
+                title: 'Delete Account',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const WebViewScreen(
+                        title: 'Delete Account',
+                        url: 'https://nutrition-trackerapp.web.app/delete-account',
+                      ),
+                    ),
+                  );
+                },
                 isDestructive: true,
               ),
             ],
