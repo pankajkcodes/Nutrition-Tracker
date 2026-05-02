@@ -11,6 +11,7 @@ import { Link, useLocation } from 'react-router-dom';
 import LandingPage from './components/LandingPage';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import AboutUs from './components/AboutUs';
+import DeleteAccount from './components/DeleteAccount';
 import logo from './assets/logo.png';
 
 function Layout({ children }) {
@@ -110,6 +111,8 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/about" element={<AboutUs />} />
+        <Route path="/delete-account" element={<DeleteAccount />} />
+
         
         {/* Secure Admin Routes */}
         <Route path="/secure_admin_portal" element={<AdminRoute user={user}><Dashboard /></AdminRoute>} />
